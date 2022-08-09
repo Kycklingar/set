@@ -11,8 +11,8 @@ func TestSortedDiff(t *testing.T) {
 		diff Sorted[int]
 	)
 
-	a = a.Set(1, 2, 3, 6, 7, 8, 10, 11, 12)
-	b = b.Set(2, 3, 4, 5, 8, 9)
+	a.Set(1, 2, 3, 6, 7, 8, 10, 11, 12)
+	b.Set(2, 3, 4, 5, 8, 9)
 
 	diff = Diff(a, b)
 
@@ -37,8 +37,8 @@ func TestSortedUnion(t *testing.T) {
 		union Sorted[int]
 	)
 
-	a = a.Set(1, 2, 3, 7, 8, 9)
-	b = b.Set(3, 4, 5, 6, 7, 10, 11, 12)
+	a.Set(1, 2, 3, 7, 8, 9)
+	b.Set(3, 4, 5, 6, 7, 10, 11, 12)
 	union = Union(a, b)
 
 	for i := 1; i <= 12; i++ {
@@ -53,8 +53,8 @@ func TestSortedIntersection(t *testing.T) {
 		intersect Sorted[int]
 	)
 
-	a = a.Set(1, 2, 3, 4, 5)
-	b = b.Set(3, 4, 5, 6, 7)
+	a.Set(1, 2, 3, 4, 5)
+	b.Set(3, 4, 5, 6, 7)
 	intersect = Intersection(a, b)
 
 	testHas(t, intersect, 3, true)

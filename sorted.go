@@ -30,7 +30,7 @@ func orderedLess[T ordered](a, b T) bool {
 }
 
 // Append adds the value to the set, returning unmodified state of s if it already exist
-func (s Sorted[T]) Append(values ...T) Sorted[T] {
+func (s *Sorted[T]) Append(values ...T) {
 	for _, value := range values {
 		index := s.bsearch(value)
 		if index > -1 {
@@ -39,11 +39,10 @@ func (s Sorted[T]) Append(values ...T) Sorted[T] {
 
 		s.insert(-index-1, value)
 	}
-
-	return s
 }
 
-func (s Sorted[T]) Set(values ...T) Sorted[T] {
+// Set sets or adds the value in the set
+func (s *Sorted[T]) Set(values ...T) {
 	for _, value := range values {
 		index := s.bsearch(value)
 		if index > -1 {
@@ -52,7 +51,6 @@ func (s Sorted[T]) Set(values ...T) Sorted[T] {
 			s.insert(-index-1, value)
 		}
 	}
-	return s
 }
 
 // returns true if the value is in the set

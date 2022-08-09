@@ -54,15 +54,15 @@ func greatCombinedString(a, b combinedString) bool {
 func TestSortedTypes(t *testing.T) {
 	var s = NewSorted[combinedString](lessCombinedString)
 
-	s = s.Append(combinedString{"hello", "world"}).
-		Append(combinedString{"hello", "world"}).
-		Append(combinedString{"hello", "earth"}).
-		Append(combinedString{"hello", "ocean"}).
-		Append(combinedString{"hello", "forest"}).
-		Append(combinedString{"goodbye", "forest"}).
-		Append(combinedString{"goodbye", "earth"}).
-		Append(combinedString{"goodbye", "world"}).
-		Append(combinedString{"goodbye", "ocean"})
+	s.Append(combinedString{"hello", "world"})
+	s.Append(combinedString{"hello", "world"})
+	s.Append(combinedString{"hello", "earth"})
+	s.Append(combinedString{"hello", "ocean"})
+	s.Append(combinedString{"hello", "forest"})
+	s.Append(combinedString{"goodbye", "forest"})
+	s.Append(combinedString{"goodbye", "earth"})
+	s.Append(combinedString{"goodbye", "world"})
+	s.Append(combinedString{"goodbye", "ocean"})
 
 	testHas[combinedString](t, s, combinedString{"hello", "world"}, true)
 	testHas[combinedString](t, s, combinedString{"hello", "earth"}, true)
@@ -86,10 +86,10 @@ func lessWvalInt(a, b wval) bool {
 
 func TestSortedGet(t *testing.T) {
 	var set = NewSorted[wval](lessWvalInt)
-	set = set.Append(wval{1, "yes"}).
-		Append(wval{2, "no"}).
-		Append(wval{3, "maybe"}).
-		Append(wval{1, "no"})
+	set.Append(wval{1, "yes"})
+	set.Append(wval{2, "no"})
+	set.Append(wval{3, "maybe"})
+	set.Append(wval{1, "no"})
 
 	val, ok := set.Get(wval{int: 3})
 	if !ok {
@@ -117,7 +117,7 @@ func TestSortedAppend(t *testing.T) {
 	var ints = generateRandomInts(10000)
 
 	for i := 0; i < len(ints); i++ {
-		s = s.Append(ints[i])
+		s.Append(ints[i])
 	}
 }
 
@@ -128,13 +128,13 @@ func TestSortedSet(t *testing.T) {
 		ok   bool
 	)
 
-	s = s.Set(wval{1, "true"}).
-		Set(wval{2, "true"}).
-		Set(wval{3, "true"}).
-		Set(wval{4, "true"}).
-		Set(wval{5, "true"}).
-		Set(wval{6, "true"})
-	s = s.Set(nwal)
+	s.Set(wval{1, "true"})
+	s.Set(wval{2, "true"})
+	s.Set(wval{3, "true"})
+	s.Set(wval{4, "true"})
+	s.Set(wval{5, "true"})
+	s.Set(wval{6, "true"})
+	s.Set(nwal)
 	nwal, ok = s.Get(nwal)
 	if !ok {
 		t.Errorf("Sorted.Get failed")
@@ -180,7 +180,7 @@ func benchmarkSortedAppend(b *testing.B, numItems int) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		set = set.Append(ints[indices[n]])
+		set.Append(ints[indices[n]])
 	}
 }
 
@@ -201,7 +201,7 @@ func benchmarkSortedHasKnown(b *testing.B, numItems int) {
 	)
 
 	for i := 0; i < len(ints); i++ {
-		set = set.Append(ints[i])
+		set.Append(ints[i])
 	}
 
 	b.ResetTimer()
@@ -226,7 +226,7 @@ func benchmarkSortedHasUnknown(b *testing.B, numItems int) {
 	)
 
 	for i := 0; i < len(ints); i++ {
-		set = set.Append(ints[i])
+		set.Append(ints[i])
 	}
 
 	ints = generateRandomInts(len(ints))
