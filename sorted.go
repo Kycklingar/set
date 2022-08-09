@@ -3,14 +3,18 @@ package set
 import "golang.org/x/exp/constraints"
 
 // NewSorted will return a Sorted set of type T using the supplied less function
-func NewSorted[T any](fn Less[T]) Sorted[T] {
-	return Sorted[T]{less: fn}
+func New[T any](fn Less[T], values ...T) Sorted[T] {
+	set := Sorted[T]{less: fn}
+	set.Set(values...)
+	return set
 }
 
 // NewOrdered is a Sorted set of basic types with a provided less function
 // use NewSorted to supply a different less function
-func NewOrdered[T ordered]() Sorted[T] {
-	return Sorted[T]{less: orderedLess[T]}
+func NewOrdered[T ordered](values ...T) Sorted[T] {
+	set := Sorted[T]{less: orderedLess[T]}
+	set.Set(values...)
+	return set
 }
 
 type (

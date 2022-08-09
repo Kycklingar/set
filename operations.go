@@ -25,7 +25,7 @@ func Diff[T any](a, b Sorted[T]) Sorted[T] {
 
 // Produce the union of sets A and B
 func Union[T any](a, b Sorted[T]) Sorted[T] {
-	var res = NewSorted[T](a.less)
+	var res = New[T](a.less)
 
 	s := func(v T) {
 		res.Slice = append(res.Slice, v)

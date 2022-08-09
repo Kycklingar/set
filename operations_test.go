@@ -6,8 +6,8 @@ import (
 
 func TestSortedDiff(t *testing.T) {
 	var (
-		a    = NewSorted[int](lessInt)
-		b    = NewSorted[int](lessInt)
+		a    = New[int](lessInt)
+		b    = New[int](lessInt)
 		diff Sorted[int]
 	)
 
@@ -32,8 +32,8 @@ func TestSortedDiff(t *testing.T) {
 
 func TestSortedUnion(t *testing.T) {
 	var (
-		a     = NewSorted[int](lessInt)
-		b     = NewSorted[int](lessInt)
+		a     = New[int](lessInt)
+		b     = New[int](lessInt)
 		union Sorted[int]
 	)
 
@@ -48,8 +48,8 @@ func TestSortedUnion(t *testing.T) {
 
 func TestSortedIntersection(t *testing.T) {
 	var (
-		a         = NewSorted[int](lessInt)
-		b         = NewSorted[int](lessInt)
+		a         = New[int](lessInt)
+		b         = New[int](lessInt)
 		intersect Sorted[int]
 	)
 

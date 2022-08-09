@@ -52,7 +52,7 @@ func greatCombinedString(a, b combinedString) bool {
 }
 
 func TestSortedTypes(t *testing.T) {
-	var s = NewSorted[combinedString](lessCombinedString)
+	var s = New[combinedString](lessCombinedString)
 
 	s.Append(combinedString{"hello", "world"})
 	s.Append(combinedString{"hello", "world"})
@@ -85,7 +85,7 @@ func lessWvalInt(a, b wval) bool {
 }
 
 func TestSortedGet(t *testing.T) {
-	var set = NewSorted[wval](lessWvalInt)
+	var set = New[wval](lessWvalInt)
 	set.Append(wval{1, "yes"})
 	set.Append(wval{2, "no"})
 	set.Append(wval{3, "maybe"})
@@ -123,7 +123,7 @@ func TestSortedAppend(t *testing.T) {
 
 func TestSortedSet(t *testing.T) {
 	var (
-		s    = NewSorted[wval](lessWvalInt)
+		s    = New[wval](lessWvalInt)
 		nwal = wval{1, "false"}
 		ok   bool
 	)
