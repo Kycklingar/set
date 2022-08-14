@@ -106,3 +106,29 @@ func benchmarkOrderedSetString(b *testing.B, numItems int) {
 		set.Set(strings[indices[n]])
 	}
 }
+
+func BenchmarkOrderedHasUnknown10k(b *testing.B) {
+	benchmarkOrderedHasUnknown(b, 10000)
+}
+
+func BenchmarkOrderedHasUnknown100k(b *testing.B) {
+	benchmarkOrderedHasUnknown(b, 100000)
+}
+
+func benchmarkOrderedHasUnknown(b *testing.B, numItems int) {
+	var (
+		set     = NewOrdered[int]()
+		ints    = generateRandomInts(numItems)
+		indices = generateRandomIndices(b.N, len(ints))
+	)
+
+	set.Set(ints...)
+
+	ints = generateRandomInts(numItems)
+
+	b.ResetTimer()
+
+	for n := 0; n < b.N; n++ {
+		set.Has(ints[indices[n]])
+	}
+}
