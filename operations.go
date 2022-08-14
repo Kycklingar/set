@@ -5,75 +5,66 @@ import (
 )
 
 // Produce the diff of sets A and B
-func Diff[T any](a, b Sorted[T]) Sorted[T] {
-	var res = Sorted[T]{
-		Slice: make([]T, 0, len(a.Slice)),
-		less:  a.less,
-	}
+func Diff[T Less[T]](a, b Sorted[T]) Sorted[T] {
+	var res = make(Sorted[T], 0, len(a))
 
 	n := func(T) {}
-	s := func(v T) { res.Slice = append(res.Slice, v) }
+	s := func(v T) { res = append(res, v) }
 
 	i, _ := sync(a, b, s, n, n)
 
-	for ; i < len(a.Slice); i++ {
-		res.Slice = append(res.Slice, a.Slice[i])
+	for ; i < len(a); i++ {
+		res = append(res, a[i])
 	}
 
 	return res
 }
 
 // Produce the union of sets A and B
-func Union[T any](a, b Sorted[T]) Sorted[T] {
-	var res = New[T](a.less)
+func Union[T Less[T]](a, b Sorted[T]) Sorted[T] {
+	var res = New[T]()
 
 	s := func(v T) {
-		res.Slice = append(res.Slice, v)
+		res = append(res, v)
 	}
 
 	i, j := sync(a, b, s, s, s)
 
-	if i < len(a.Slice) {
-		res.Slice = append(res.Slice, a.Slice[i:]...)
+	if i < len(a) {
+		res = append(res, a[i:]...)
 	}
 
-	if j < len(b.Slice) {
-		res.Slice = append(res.Slice, b.Slice[j:]...)
+	if j < len(b) {
+		res = append(res, b[j:]...)
 	}
 
 	return res
 }
 
 // Produce the intersection of sets A and B
-func Intersection[T any](a, b Sorted[T]) Sorted[T] {
-	var res = Sorted[T]{
-		Slice: make([]T, 0, mm.Max(len(a.Slice), len(b.Slice))),
-		less:  a.less,
-	}
+func Intersection[T Less[T]](a, b Sorted[T]) Sorted[T] {
+	var res = make(Sorted[T], 0, mm.Max(len(a), len(b)))
 
 	n := func(T) {}
-	s := func(v T) { res.Slice = append(res.Slice, v) }
+	s := func(v T) { res = append(res, v) }
 
 	sync(a, b, n, n, s)
 
 	return res
 }
 
-func sync[T any](a, b Sorted[T], less, greater, equal func(T)) (int, int) {
-	var (
-		l    = a.less
-		i, j int
-	)
+func sync[T Less[T]](a, b Sorted[T], less, greater, equal func(T)) (int, int) {
+	var i, j int
 
-	for i < len(a.Slice) && j < len(b.Slice) {
-		if l(a.Slice[i], b.Slice[j]) {
-			less(a.Slice[i])
+	for i < len(a) && j < len(b) {
+		if a[i].Less(b[j]) {
+			less(a[i])
 			i++
-		} else if l(b.Slice[j], a.Slice[i]) {
-			greater(b.Slice[j])
+		} else if b[j].Less(a[i]) {
+			greater(b[j])
 			j++
 		} else {
-			equal(a.Slice[i])
+			equal(a[i])
 			i++
 			j++
 		}

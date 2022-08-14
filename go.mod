@@ -1,6 +1,6 @@
 module github.com/kycklingar/set
 
-go 1.18
+go 1.19
 
 require (
 	github.com/kycklingar/MinMax v1.0.0 // indirect

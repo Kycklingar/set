@@ -1,37 +1,17 @@
 package set
 
-import "golang.org/x/exp/constraints"
-
-// NewSorted will return a Sorted set of type T using the supplied less function
-func New[T any](fn Less[T], values ...T) Sorted[T] {
-	set := Sorted[T]{less: fn}
-	set.Set(values...)
-	return set
-}
-
-// NewOrdered is a Sorted set of basic types with a provided less function
-// use NewSorted to supply a different less function
-func NewOrdered[T ordered](values ...T) Sorted[T] {
-	set := Sorted[T]{less: orderedLess[T]}
-	set.Set(values...)
-	return set
+func New[T Less[T]](values ...T) Sorted[T] {
+	var s Sorted[T]
+	s.Append(values...)
+	return s
 }
 
 type (
+	Sorted[T Less[T]] []T
+
 	// Less is used for sorting in the Sorted set
-	Less[T any] func(T, T) bool
-	ordered     constraints.Ordered
-
-	// Sorted is a sorted set of type T, providing a set of common functions
-	Sorted[T any] struct {
-		Slice []T
-		less  func(T, T) bool
-	}
+	Less[T any] interface{ Less(T) bool }
 )
-
-func orderedLess[T ordered](a, b T) bool {
-	return a < b
-}
 
 // Append adds the value to the set, returning unmodified state of s if it already exist
 func (s *Sorted[T]) Append(values ...T) {
@@ -50,7 +30,7 @@ func (s *Sorted[T]) Set(values ...T) {
 	for _, value := range values {
 		index := s.bsearch(value)
 		if index > -1 {
-			s.Slice[index] = value
+			(*s)[index] = value
 		} else {
 			s.insert(-index-1, value)
 		}
@@ -67,21 +47,21 @@ func (s Sorted[T]) Has(value T) bool {
 func (s Sorted[T]) Get(value T) (T, bool) {
 	index := s.bsearch(value)
 	if index > -1 {
-		return s.Slice[index], true
+		return s[index], true
 	}
 
 	return value, false
 }
 
 func (s *Sorted[T]) insert(index int, value T) {
-	s.Slice = append(s.Slice, value)
+	*s = append(*s, value)
 
-	if s.less(s.Slice[index], value) {
+	if (*s)[index].Less(value) {
 		index++
 	}
 
-	for i := index; i < len(s.Slice); i++ {
-		s.Slice[i], value = value, s.Slice[i]
+	for i := index; i < len(*s); i++ {
+		(*s)[i], value = value, (*s)[i]
 	}
 }
 
@@ -90,14 +70,14 @@ func (s *Sorted[T]) insert(index int, value T) {
 func (s Sorted[T]) bsearch(value T) int {
 	var (
 		l, m int
-		r    = len(s.Slice) - 1
+		r    = len(s) - 1
 	)
 
 	for l <= r {
 		m = (l + r) / 2
-		if s.less(s.Slice[m], value) {
+		if s[m].Less(value) {
 			l = m + 1
-		} else if s.less(value, s.Slice[m]) {
+		} else if value.Less(s[m]) {
 			r = m - 1
 		} else {
 			return m

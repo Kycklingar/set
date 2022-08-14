@@ -6,15 +6,8 @@ import (
 	"testing"
 )
 
-func lessInt(a, b int) bool {
-	return a < b
-}
-
 func TestSortedHas(t *testing.T) {
-	var s = Sorted[int]{
-		Slice: []int{1, 2, 3, 4, 5, 6, 7, 8, 20, 21, 22, 23, 24, 25, 49, 123123},
-		less:  lessInt,
-	}
+	var s = Sorted[intu]{1, 2, 3, 4, 5, 6, 7, 8, 20, 21, 22, 23, 24, 25, 49, 123123}
 
 	testHas(t, s, 1, true)
 	testHas(t, s, 2, true)
@@ -43,16 +36,12 @@ func (cs combinedString) String() string {
 	return fmt.Sprint(cs.a, " ", cs.b)
 }
 
-func lessCombinedString(a, b combinedString) bool {
+func (a combinedString) Less(b combinedString) bool {
 	return a.String() < b.String()
 }
 
-func greatCombinedString(a, b combinedString) bool {
-	return a.String() > b.String()
-}
-
 func TestSortedTypes(t *testing.T) {
-	var s = New[combinedString](lessCombinedString)
+	var s = New[combinedString]()
 
 	s.Append(combinedString{"hello", "world"})
 	s.Append(combinedString{"hello", "world"})
@@ -80,12 +69,12 @@ type wval struct {
 	string
 }
 
-func lessWvalInt(a, b wval) bool {
+func (a wval) Less(b wval) bool {
 	return a.int < b.int
 }
 
 func TestSortedGet(t *testing.T) {
-	var set = New[wval](lessWvalInt)
+	var set = New[wval]()
 	set.Append(wval{1, "yes"})
 	set.Append(wval{2, "no"})
 	set.Append(wval{3, "maybe"})
@@ -110,20 +99,18 @@ func TestSortedGet(t *testing.T) {
 }
 
 func TestSortedAppend(t *testing.T) {
-	var s = Sorted[int]{
-		less: lessInt,
-	}
+	var s = New[intu]()
 
 	var ints = generateRandomInts(10000)
 
 	for i := 0; i < len(ints); i++ {
-		s.Append(ints[i])
+		s.Append(intu(ints[i]))
 	}
 }
 
 func TestSortedSet(t *testing.T) {
 	var (
-		s    = New[wval](lessWvalInt)
+		s    = New[wval]()
 		nwal = wval{1, "false"}
 		ok   bool
 	)
@@ -172,7 +159,7 @@ func BenchmarkSortedAppend100k(b *testing.B) {
 
 func benchmarkSortedAppend(b *testing.B, numItems int) {
 	var (
-		set     = NewOrdered[int]()
+		set     = New[intu]()
 		ints    = generateRandomInts(numItems)
 		indices = generateRandomIndices(b.N, len(ints))
 	)
@@ -180,7 +167,7 @@ func benchmarkSortedAppend(b *testing.B, numItems int) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		set.Append(ints[indices[n]])
+		set.Append(intu(ints[indices[n]]))
 	}
 }
 
@@ -194,20 +181,20 @@ func BenchmarkSortedHasKnown100k(b *testing.B) {
 
 func benchmarkSortedHasKnown(b *testing.B, numItems int) {
 	var (
-		set  = NewOrdered[int]()
+		set  = NewOrdered[intu]()
 		ints = generateRandomInts(numItems)
 
 		indices = generateRandomIndices(b.N, len(ints))
 	)
 
 	for i := 0; i < len(ints); i++ {
-		set.Append(ints[i])
+		set.Append(intu(ints[i]))
 	}
 
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		set.Has(ints[indices[n]])
+		set.Has(intu(ints[indices[n]]))
 	}
 }
 
@@ -220,13 +207,13 @@ func BenchmarkSortedHasUnknown100k(b *testing.B) {
 
 func benchmarkSortedHasUnknown(b *testing.B, numItems int) {
 	var (
-		set     = NewOrdered[int]()
+		set     = New[intu]()
 		ints    = generateRandomInts(numItems)
 		indices = generateRandomIndices(b.N, len(ints))
 	)
 
 	for i := 0; i < len(ints); i++ {
-		set.Append(ints[i])
+		set.Append(intu(ints[i]))
 	}
 
 	ints = generateRandomInts(len(ints))
@@ -234,17 +221,11 @@ func benchmarkSortedHasUnknown(b *testing.B, numItems int) {
 	b.ResetTimer()
 
 	for n := 0; n < b.N; n++ {
-		set.Has(ints[indices[n]])
+		set.Has(intu(ints[indices[n]]))
 	}
 }
 
-//func BenchmarkSortedStrings(b *testing.B) {
-//	var (
-//		set = OrderedSet[string]()
-//	)
-//}
-
-func testHas[T any](t *testing.T, s Sorted[T], value T, expect bool) {
+func testHas[T Less[T]](t *testing.T, s Sorted[T], value T, expect bool) {
 	if has := s.Has(value); has != expect {
 		t.Errorf(
 			"Sorted.Has resulted in incorrect return value: %t, expected %t for value  %v\n",
